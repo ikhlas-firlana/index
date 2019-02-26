@@ -1,2 +1,2 @@
 # index
-index github.com/ikhlas-firlana
+index https://github.com/ikhlas-firlana
