@@ -75,7 +75,7 @@ paths:
         description: Pet object that needs to be added to the store
         required: true
         schema:
-          "$ref": "#/definitions/Pet"
+          "$ref": "#/definitions/RequestTopupAccount"
       responses:
         '405':
           description: Invalid input
@@ -166,7 +166,7 @@ securityDefinitions:
     name: api_key
     in: header
 definitions:
-  # Requetes create account and pool account
+  # Requets create account and pool account
   RequestCreateAccount:
     type: object
     properties:
@@ -196,6 +196,31 @@ definitions:
   #  200
   ResponseCreateAccount:
     type: object
+  # Requests top up pool account
+  RequestTopupAccount:
+    type: object
+    properties:
+      account_code:
+        type: string
+        example: "1"
+      pool_code:
+        type: string
+        example: "6282118345297"
+      amount:
+        type: integer
+        example: 14000000
+      currency:
+        type: string
+        default: IDR
+      description:
+        type: string
+      trx_code:
+        type: string
+      trx_ref:
+        type: string
+      trx_timestamp:
+        type: moment
+        default: Date
   Account:
     type: object
     properties:
