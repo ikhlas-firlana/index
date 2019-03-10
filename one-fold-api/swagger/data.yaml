@@ -192,10 +192,14 @@ definitions:
         example: "wallet"
       created_date:
         type: string
-        example: "10 March 2019 at 00:00:00 UTC+7"
+        example: "2019-12-31 00:00:00"
   #  200
   ResponseCreateAccount:
     type: object
+    properties:
+      id:
+        type: string
+        example: "xYjsuiLjshqnposJJbs"
   # Requests top up pool account
   RequestTopupAccount:
     type: object
@@ -219,8 +223,8 @@ definitions:
       trx_ref:
         type: string
       trx_timestamp:
-        type: moment
-        default: Date
+        type: string
+        example: "2019-12-31 59:59:59"
   Account:
     type: object
     properties:
