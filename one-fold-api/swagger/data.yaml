@@ -1,0 +1,294 @@
+---
+swagger: '2.0'
+info:
+  description: 'This is a sample server Petstore server.  You can find out more about
+    Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For
+    this sample, you can use the api key `special-key` to test the authorization filters.'
+  version: 1.0.0
+  title: Swagger One fold
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: ifirlana@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: https://us-central1-one-fold.cloudfunctions.net/
+basePath: "/"
+tags:
+- name: api
+  description: Everything pool account sub account
+  externalDocs:
+    description: Find out more
+    url: http://swagger.io
+schemes:
+- https
+paths:
+  "/api/create-account/":
+    post:
+      tags:
+      - api
+      summary: Add account billing
+      description: ''
+      operationId: api-create-account
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: create account with pool account object
+        required: true
+        schema:
+          "$ref": "#/definitions/RequestCreateAccount"
+      responses:
+        '200':
+          description: OK
+          schema:
+            "$ref": "#/definitions/ResponseCreateAccount"
+        '400':
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+          description: Bad Request
+        '405':
+          schema:
+            "$ref": "#/definitions/ErrorResponse"
+          description: Unauthorized
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  "/api/top-up/":
+    post:
+      tags:
+      - api
+      summary: Add plus pool account
+      description: ''
+      operationId: apiTopUp
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Pet object that needs to be added to the store
+        required: true
+        schema:
+          "$ref": "#/definitions/Pet"
+      responses:
+        '405':
+          description: Invalid input
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  "/api/transfer/":
+    post:
+      tags:
+      - api
+      summary: 'Transfer from pool account to pool account '
+      description: Multiple status values can be provided with comma separated strings
+      operationId: updatecreatetransferpoolaccount
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+      - name: status
+        in: query
+        description: Status values that need to be considered for filter
+        required: true
+        type: array
+        items:
+          type: string
+          enum:
+          - available
+          - pending
+          - sold
+          default: available
+        collectionFormat: multi
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/Pet"
+        '400':
+          description: Invalid status value
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  "/api/withdrawal/":
+    post:
+      tags:
+      - api
+      summary: Retrieve amount
+      description: Multiple tags can be provided with comma separated strings. Use
+        tag1, tag2, tag3 for testing.
+      operationId: apiWithdrawal
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+      - name: tags
+        in: query
+        description: Tags to filter by
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/Pet"
+        '400':
+          description: Invalid tag value
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+securityDefinitions:
+  petstore_auth:
+    type: oauth2
+    authorizationUrl: https://petstore.swagger.io/oauth/authorize
+    flow: implicit
+    scopes:
+      write:pets: modify pets in your account
+      read:pets: read your pets
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  # Requetes create account and pool account
+  RequestCreateAccount:
+    type: object
+    properties:
+      account_code:
+        type: string
+        example: "1"
+      name:
+        type: string
+        example: "ikhlas firlana"
+      # balance_account: di set 0 jika default nya belum ada, jika ada maka di sum dari balance pool
+      #   type: integer
+      #   format: int32
+      #   example: 0
+      pool_code: 
+        type: string
+        example: "6282118345297"
+      balance: # balance di default 0, jika tidak terisi.
+        type: integer
+        format: int32
+        example: 0
+      pool_name:
+        type: string
+        example: "wallet"
+      created_date:
+        type: string
+        example: "10 March 2019 at 00:00:00 UTC+7"
+  #  200
+  ResponseCreateAccount:
+    type: object
+  Account:
+    type: object
+    properties:
+      account_code:
+        type: string
+      balance:
+        type: integer
+        format: int32
+      currency:
+        type: string
+        default: IDR
+      name:
+        type: string
+      created:
+        type: moment
+        default: Date
+      last_updated:
+        type: moment
+        default: Date
+    xml:
+      name: Account
+  PoolAccount:
+    type: object
+    properties:
+      account_id:
+        type: integer
+        format: int64
+        description: references of object Account
+      account_code:
+        type: account_code
+      balance:
+        type: integer
+        format: int32
+      currency:
+        type: string
+        default: IDR
+      name:
+        type: string
+      is_withdrawal:
+        type: boolean
+        format: int32
+        default: 'true'
+      system:
+        type: string
+        default: API | WALLET
+    xml:
+      name: User
+  Transactions:
+    type: object
+    properties:
+      account_id:
+        type: string
+        format: map
+        default: references of object account
+      pool_id:
+        type: string
+        format: map
+        default: references of object poolaccount
+      amount:
+        type: integer
+        format: int32
+      balance:
+        type: integer
+        format: int32
+      code:
+        type: string
+        default: C | D
+      currency:
+        type: string
+        default: IDR
+      created:
+        type: moment
+        default: Date
+      description:
+        type: string
+      trx_code:
+        type: string
+      trx_ref:
+        type: string
+      trx_timestamp:
+        type: moment
+        default: Date
+    xml:
+      name: Category
+  ErrorResponse:
+    type: object
+    properties:
+      code:
+        type: "string"
+        default: BAD_REQUEST | FORBIDDEN | INTERNAL_ERROR
+      message:
+        type: string
+        default: ""
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
